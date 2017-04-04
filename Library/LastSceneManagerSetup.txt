@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Jetroid/Scenes/SplashScene.unity
+- path: Assets/Jetroid/Scenes/GameStaging.unity
   isLoaded: 1
   isActive: 1
