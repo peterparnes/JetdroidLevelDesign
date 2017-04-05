@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using System.Collections.Generic;
 
 [CustomEditor(typeof(TileMap))]
 public class TileMapEditor : Editor {
@@ -9,6 +10,9 @@ public class TileMapEditor : Editor {
 
 	TileBrush brush;
 	Vector3 mouseHitPos;
+	bool solidFlag;
+	int sortingOrder = 0;
+	string layerName = "";
 
 	bool mouseOnMap{
 		get { return mouseHitPos.x > 0 && mouseHitPos.x < map.gridSize.x && mouseHitPos.y < 0 && mouseHitPos.y > -map.gridSize.y;}
@@ -40,7 +44,22 @@ public class TileMapEditor : Editor {
 			map.tilePadding = EditorGUILayout.Vector2Field ("Tile Padding", map.tilePadding);
 			EditorGUILayout.LabelField("Grid Size In Units:", map.gridSize.x+"x"+map.gridSize.y);
 			EditorGUILayout.LabelField("Pixels To Units:", map.pixelsToUnits.ToString());
+			solidFlag = EditorGUILayout.Toggle ("Solid", solidFlag);
+			sortingOrder = EditorGUILayout.IntField ("Order In Layer", sortingOrder);
 			UpdateBrush(map.currentTileBrush);
+
+			var layerNames = GetLayerNames ();
+			var index = ArrayUtility.IndexOf (layerNames, layerName);
+
+			index = EditorGUILayout.Popup ("Layer Name", index, layerNames);
+
+			if (index > -1) {
+				layerName = layerNames[index];
+				if (GUILayout.Button ("Clear Layer")) {
+					layerName = null;
+				}
+					
+			}
 
 			if(GUILayout.Button("Clear Tiles")){
 				if(EditorUtility.DisplayDialog("Clear map's tiles?", "Are you sure?", "Clear", "Do not clear")){
@@ -186,9 +205,18 @@ public class TileMapEditor : Editor {
 			tile.transform.SetParent(map.tiles.transform);
 			tile.transform.position = new Vector3(posX, posY, 0);
 			tile.AddComponent<SpriteRenderer>();
+			tile.AddComponent<BoxCollider2D> ();
 		}
 
-		tile.GetComponent<SpriteRenderer> ().sprite = brush.renderer2D.sprite;
+		var renderer = tile.GetComponent<SpriteRenderer> (); 
+		renderer.sprite = brush.renderer2D.sprite;
+		renderer.sortingOrder = sortingOrder;
+
+		var collider = tile.GetComponent<BoxCollider2D> ();
+		collider.enabled = solidFlag;
+		collider.size = renderer.bounds.size;
+
+		tile.layer = LayerMask.NameToLayer(layerName);
 	}
 
 	void RemoveTile(){
@@ -207,5 +235,17 @@ public class TileMapEditor : Editor {
 			DestroyImmediate(t.gameObject);
 			i--;
 		}
+	}
+
+	string[] GetLayerNames() {
+		var layerNames = new List<string> ();
+		for (int i = 8; i <= 31; i++) {
+			var layer = LayerMask.LayerToName (i);
+			if (layer.Length > 0) {
+				layerNames.Add (layer);
+			}
+		}
+
+		return layerNames.ToArray();
 	}
 }
