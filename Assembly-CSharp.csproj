@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\JetdroidLevelDesign\Scripts\Door.cs" />
      <Compile Include="Assets\JetdroidLevelDesign\Scripts\DoorTrigger.cs" />
+     <Compile Include="Assets\JetdroidLevelDesign\Scripts\Switch.cs" />
      <Compile Include="Assets\Jetroid\Scripts\CameraFollow.cs" />
      <Compile Include="Assets\Jetroid\Scripts\ClickToContinue.cs" />
      <Compile Include="Assets\Jetroid\Scripts\Collectible.cs" />
