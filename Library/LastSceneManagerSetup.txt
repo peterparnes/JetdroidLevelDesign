@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/JetdroidLevelDesign/Scenes/LevelDesignStaging.unity
-  isLoaded: 1
-  isActive: 1
